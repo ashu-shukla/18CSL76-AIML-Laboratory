@@ -3,42 +3,43 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from sklearn.mixture import GaussianMixture
 from sklearn.cluster import KMeans
+
+
 # Importing the dataset
 data = pd.read_csv('ex.csv')
 print("Input Data and Shape")
-print(data.shape)
-data.head()
-print(data.head())
+print(data)
+
+
 # Getting the values and plotting it
 f1 = data['V1'].values
-print("f1")
-print(f1)
 f2 = data['V2'].values
+
+
+# Create a new data array/matrix with f1 and f2
 X = np.array(list(zip(f1, f2)))
-print("x")
-print(X)
+
+
+# Scatter plot of the matrix
 print('Graph for whole dataset')
-plt.scatter(f1, f2, c='black', s=600)
+plt.scatter(f1, f2, c='black')
 plt.show()
+
+# KMeans Clustering
 kmeans = KMeans(2, random_state=0)
+
 labels = kmeans.fit(X).predict(X)
-print("labels")
-print(labels)
 centroids = kmeans.cluster_centers_
-print("centroids")
-print(centroids)
+
+
 plt.scatter(X[:, 0], X[:, 1], c=labels, s=40)
-print('Graph using Kmeans Algorithm')
-plt.scatter(centroids[:, 0], centroids[:, 1], marker='*', s=200, c='#050505')
+plt.scatter(centroids[:, 0], centroids[:, 1], marker='*', s=200, c='g')
 plt.show()
-# gmm demo
+
+
+# Gaussian Mixture
+print('Graph using EM Algorithm')
 gmm = GaussianMixture(n_components=2).fit(X)
 labels = gmm.predict(X)
-print("lLABELS GMM")
-print(labels)
-probs = gmm.predict_proba(X)
-size = 10 * probs.max(1) ** 3
-print('Graph using EM Algorithm')
-# print(probs[:300].round(4))
-plt.scatter(X[:, 0], X[:, 1], c=labels, s=size, cmap='viridis')
+plt.scatter(X[:, 0], X[:, 1], c=labels, s=50)
 plt.show()

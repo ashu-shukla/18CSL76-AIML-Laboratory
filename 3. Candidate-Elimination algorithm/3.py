@@ -34,19 +34,19 @@ for i in range(0, len(a)):
             if a[i][j] != s[j]:
                 s[j] = '?'
         for j in range(0, no_attributes):
-            for k in range(1, len(temp)):
+            for k in range(0, len(temp)):
                 if temp[k][j] != '?' and temp[k][j] != s[j]:
                     del temp[k]
-        print('For training', i, 'the Specific Hypothesis is', s)
+        print('For positive training', i, 'the Specific Hypothesis is', s)
         if len(temp) == 0:
-            print('For training', i, 'the general Hypothesis is', g)
+            print('For positive training', i, 'the general Hypothesis is', g)
         else:
-            print('For training', i, 'the general Hypothesis is', temp)
+            print('For positive training', i, 'the general Hypothesis is', temp)
     if a[i][no_attributes] == 'no':
         for j in range(0, no_attributes):
             if s[j] != a[i][j] and s[j] != '?':
                 g[j] = s[j]
                 temp.append(g)
                 g = ['?']*no_attributes
-        print('For training', i, 'the Specific Hypothesis is', s)
-        print('For training', i, 'the general Hypothesis is', g)
+        print('For negative training', i, 'the Specific Hypothesis is', s)
+        print('For negative training', i, 'the general Hypothesis is', temp)

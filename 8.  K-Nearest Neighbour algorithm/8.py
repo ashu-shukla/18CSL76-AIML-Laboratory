@@ -1,26 +1,25 @@
 from sklearn.datasets import load_iris
 from sklearn.neighbors import KNeighborsClassifier
-import numpy as np
 from sklearn.model_selection import train_test_split
-iris_dataset = load_iris()
-print("\n IRIS FEATURES \ TARGET NAMES: \n ", iris_dataset.target_names)
-for i in range(len(iris_dataset.target_names)):
-    print("\n[{0}]:[{1}]".format(i, iris_dataset.target_names[i]))
-print("\n IRIS DATA :\n", iris_dataset["data"])
+import numpy as np
 
-X_train, X_test, y_train, y_test = train_test_split(iris_dataset["data"], iris_dataset["target"],
-                                                    random_state=0)
-print("\n Target :\n", iris_dataset["target"])
-print("\n X TRAIN \n", X_train)
-print("\n X TEST \n", X_test)
-print("\n Y TRAIN \n", y_train)
-print("\n Y TEST \n", y_test)
+# Load iris data.
+iris_dataset = load_iris()
+
+# Get x,y training and testing data.
+X_train, X_test, y_train, y_test = train_test_split(iris_dataset["data"], iris_dataset["target"])
+
+
+# Init KNN and train x and y.
 kn = KNeighborsClassifier(n_neighbors=1)
 kn.fit(X_train, y_train)
+
+# Predict
 for i in range(len(X_test)):
     x = X_test[i]
+    # Predict needs 2d array so we create array of array.
     x_new = np.array([x])
     prediction = kn.predict(x_new)
-    print("\n Actual : {0} {1}, Predicted :{2}{3}".format(
-        y_test[i], iris_dataset["target_names"][y_test[i]], prediction, iris_dataset["target_names"][prediction]))
+    print("\n Actual :", y_test[i], iris_dataset["target_names"][y_test[i]])
+    print("Predicted :", prediction, iris_dataset["target_names"][prediction])
 print("\n TEST SCORE[ACCURACY]: {:.2f}\n".format(kn.score(X_test, y_test)))

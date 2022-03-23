@@ -19,61 +19,68 @@
 import pprint
 import numpy as np
 import pandas as pd
-eps = np.finfo(float).eps
 df = pd.read_csv('4data.csv')
 
 # print(df)
 
 
-def find_entropy(df):
-    col = df.keys()[-1]
-    entropy = 0
-    values = df[col].unique()
-    for value in values:
-        fraction = df[col].value_counts()[value]/len(df[col])
-        entropy = entropy+fraction*np.log2(fraction)
+def find_entropy_of_whole_dataset(df):
+    col = df.keys()[-1] # Get the last column name.
+    entropy = 0 # Initialize entropy to 0.
+    values = df[col].unique() # Get unique values of that col, here it is 'yes' and 'no'.
+    for value in values: # For each unique value we will calculate the entropy.
+        fraction = df[col].value_counts()[value]/len(df[col]) # Getting the fraction [9+,5-] ==> 9/14 and 5/14
+        entropy = entropy+(-fraction*np.log2(fraction))# Getting the log2 ==> 9/14(log2(9/14))  and  5/14(log2(5/14))
+    # Returning the datasets entropy
     return entropy
 
 
 def find_entropy_attribute(df, attr):
     col = df.keys()[-1]
     target_variables = df[col].unique()
-    variables = df[attr].unique()
-    entropy2 = 0
-    for variable in variables:
+    attr_variables = df[attr].unique()
+    attr_entropy = 0
+    for variable in attr_variables:
         entropy = 0
         for target_variable in target_variables:
             num = len(df[attr][df[attr] == variable]
                       [df[col] == target_variable])
             den = len(df[attr][df[attr] == variable])
-            fraction = num/(den+eps)
-            entropy = entropy+(-fraction*np.log2(fraction+eps))
-        fraction2 = den/len(df)
-        entropy2 = entropy2+(-fraction2*entropy)
-    return abs(entropy2)
+            if num==0:
+                entropy=0
+            else:
+                fraction=num/(den)
+                entropy = entropy+(-fraction*np.log2(fraction))
+        final_fraction = den/len(df)
+        attr_entropy = attr_entropy+(-final_fraction*entropy)
+    return attr_entropy
 
 
 def find_winner(df):
     IG = []
     for key in df.keys()[:-1]:
-        IG.append(find_entropy(df)-find_entropy_attribute(df, key))
+        dataset_entropy=find_entropy_of_whole_dataset(df)
+        IG.append(dataset_entropy+find_entropy_attribute(df, key))
+    # Returning the attribute name with highest IG.
     return df.keys()[:-1][np.argmax(IG)]
 
 
 def get_subtable(df, node, value):
+    # print(df[df[node] == value].reset_index(drop=True))
     return df[df[node] == value].reset_index(drop=True)
 
 
 def buildtree(df, tree=None):
     node = find_winner(df)
-    attvalue = np.unique(df[node])
+    attr_values = np.unique(df[node])
+    # print(attr_values)
     if tree is None:
         tree = {}
         tree[node] = {}
-        for value in attvalue:
+        for value in attr_values:
             subtable = get_subtable(df, node, value)
-            clvalue, counts = np.unique(
-                subtable['Play'], return_counts=True)
+            clvalue, counts = np.unique(subtable['Play'], return_counts=True)
+            # print(counts)
             if len(counts) == 1:
                 tree[node][value] = clvalue[0]
             else:
